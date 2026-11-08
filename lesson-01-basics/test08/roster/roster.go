@@ -93,30 +93,34 @@ func (r *Roster) TotalScoreByName(name string) int {
 //	S002 Wang 80
 //
 // 每行以 "\n" 结尾；空名册返回空字符串 ""。
-func FormatText(r *Roster) string {
+
+// FormatText 把名单渲染成人看的纯文本，每行一条记录：
+// 提取的公共函数，负责遍历和拼接
+func formatRoster(r *Roster, formatter func(Student) string) string {
 	var builder strings.Builder
 	for _, student := range r.students {
-		builder.WriteString(fmt.Sprintf("%s %s %d\n", student.ID, student.Name, student.Score))
+		builder.WriteString(formatter(student))
 	}
-	// TODO: 遍历 r.students，用 fmt.Sprintf("%s %s %d\n", ...) 拼出每一行，
-	// 再用 builder.WriteString 写进去，最后 return builder.String()。
 	return builder.String()
 }
 
-// FormatCSV 把同一份名册渲染成机器读的 CSV：
-//
-//	id,name,score
-//	S001,Lin,90
-//	S002,Wang,80
-//
-// 第一行固定是表头 "id,name,score"；每行以 "\n" 结尾；
-// 空名册只返回表头那一行。
+// FormatText 把名单渲染成人看的纯文本，每行一条记录：
+func FormatText(r *Roster) string {
+	return formatRoster(r, func(student Student) string {
+		return fmt.Sprintf("%s %s %d\n", student.ID, student.Name, student.Score)
+	})
+}
+
+// FormatCSV 把同一份名单渲染成机器读的 CSV：
 func FormatCSV(r *Roster) string {
 	var builder strings.Builder
+	// 第一行固定是表头 "id,name,score"，注意这里不能有空格，且必须带 \n
 	builder.WriteString("id,name,score\n")
-	// TODO: 先写表头，再遍历 r.students 写出每一行。
-	for _, student := range r.students {
-		builder.WriteString(fmt.Sprint(student.ID, student.Name, student.Score))
-	}
+
+	// 遍历数据，注意这里是英文逗号
+	builder.WriteString(formatRoster(r, func(student Student) string {
+		return fmt.Sprintf("%s,%s,%d\n", student.ID, student.Name, student.Score)
+	}))
+
 	return builder.String()
 }
