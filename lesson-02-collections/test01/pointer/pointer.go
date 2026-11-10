@@ -33,7 +33,7 @@ func Renamed(s Student, name string) Student {
 	s.Name = name
 
 	// TODO: s 是值传递进来的副本，改它不会影响调用方。
-	return Student{}
+	return s
 }
 
 // Scaled 返回 a 中每个元素乘以 k 之后的新数组；原数组不能被修改。
@@ -42,7 +42,7 @@ func Scaled(a [3]int, k int) [3]int {
 		a[i] = a[i] * k
 	}
 	// TODO: 数组是值类型，参数 a 已经是一份完整副本。
-	return [3]int{}
+	return a
 }
 
 // ScaleInPlace 把 a 指向的数组中每个元素原地乘以 k。
