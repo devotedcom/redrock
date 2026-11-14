@@ -1,6 +1,10 @@
 package dns
 
-import "errors"
+import (
+	"errors"
+	"strings"
+	"sync"
+)
 
 // ErrInvalid 表示域名或 IP 为空（去掉空白后）。
 var ErrInvalid = errors.New("dns: domain and ip must not be empty")
@@ -10,12 +14,18 @@ var ErrInvalid = errors.New("dns: domain and ip must not be empty")
 // 字段怎么设计由你决定，这一题是从零实现。
 // 要求零值 Resolver（var r Resolver）也能直接使用。
 type Resolver struct {
+	mu    sync.Mutex
+	forward map[string][]string
+	backward map[string]map[string]struct{}
+
+
 	// TODO: 设计你需要的字段。
 }
 
 // New 返回一个空的 Resolver。
 func New() *Resolver {
-	// TODO
+
+	// TODO1
 	return &Resolver{}
 }
 
@@ -23,8 +33,12 @@ func New() *Resolver {
 //
 //	" WWW.Example.COM. " -> "www.example.com"
 func Normalize(domain string) string {
+	domain = strings.TrimSpace(domain)
+	domain = strings.ToLower(domain)
+	domain = strings.TrimSuffix(domain, ".")
+
 	// TODO
-	return ""
+	return domain
 }
 
 // Add 记录 domain -> ip。域名先规范化，IP 去掉两端空白。
@@ -37,8 +51,12 @@ func (r *Resolver) Add(domain, ip string) error {
 
 // Lookup 查询域名对应的 IP；查询前同样要规范化。不存在时返回 "", false。
 func (r *Resolver) Lookup(domain string) (string, bool) {
+	domain := Normalize(domain)
+	ip=strings.TrimSpace(ip)
+	if domain == ""||ip==""{
+
 	// TODO
-	return "", false
+	return ErrInvalid
 }
 
 // Remove 删除一个域名；不存在时什么也不做。反查结果也要同步删除。
